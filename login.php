@@ -102,7 +102,7 @@ if (isset($_POST['submit'])) {
 		if ($stmt->num_rows > 0) {
 			$stmt->bind_result($name, $username, $password, $status);
 			$stmt->fetch();
-			$post_password = $_POST['password']; //  md5($_POST['password']);
+			$post_password =   md5($_POST['password']);
 			if ($post_password == $password) {
 				if ($status == 1) {
 					$_SESSION['Session_Id'] = uniqid();

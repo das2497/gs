@@ -27,7 +27,7 @@ if(isset($_POST['insert'])){
       if (move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
 
         $sql = "INSERT INTO `products` (`pro_name`, `categorie_id`, `media_file`) 
-        VALUES ('{$_POST['pro_name']}', '{$_POST['cat_id']}','$filename');";
+        VALUES ('{$_POST['pro_name']}', '{$_POST['cat_id']}','$fileext');";
         $conn->query($sql);
 
       } else {

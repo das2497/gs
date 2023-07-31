@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once "config/session.php";
 require_once "config/database.php";
 require_once "layout/header.php";
@@ -6,15 +7,16 @@ require_once "layout/footer.php";
 
 html_header("Change_Password");
 
-if (isset($_POST['adduser'])) { 
-    $pass=md5($_POST['newpass']);
-    $sql = "INSERT INTO `users`(`name`, `username`, `password`, `status`) VALUES
-        ('{$_POST['Fullname']}','{$_POST['Username']}', '".$pass."', '1')";
-        $conn->query($sql);
-        echo"<script>window.location.href = 'Manage_Users.php';</script>";
-    }
+if (isset($_POST['updatepass'])) {
+    $pass = md5($_POST['newpass']);
+    $sql = "UPDATE users SET password='" . $pass . "' WHERE username='{$_SESSION['username']}';";
+    // $sql = "INSERT INTO `users`(`name`, `username`, `password`, `status`) VALUES
+    //     ('{$_POST['Fullname']}','{$_POST['Username']}', '".$pass."', '1')";
+    $conn->query($sql);
+    echo "<script>window.location.href = 'Manage_Users.php';</script>";
+}
 
-echo<<<EOT
+echo <<<EOT
 <main id="main" class="main">
     <div class="pagetitle">
         <h1>Change Password</h1>
@@ -68,19 +70,20 @@ echo<<<EOT
 
 
     <script>
-        var password = document.getElementById("password"), confirm_password = document.getElementById("confirm_password");
-        function validatePassword() {
-            if (password.value != confirm_password.value) {
-                confirm_password.setCustomValidity("Passwords Don't Match");
-            } else {
-                confirm_password.setCustomValidity('');
-            }
-        }
-        password.onchange = validatePassword;
-        confirm_password.onkeyup = validatePassword;
+        // var password = document.getElementById("password")
+        // var confirm_password = document.getElementById("confirm_password");
+        // function validatePassword() {
+        //     if (password.value != confirm_password.value) {
+        //         confirm_password.setCustomValidity("Passwords Don't Match");
+        //     } else {
+        //         confirm_password.setCustomValidity('');
+        //     }
+        // }
+        // password.onchange = validatePassword;
+        // confirm_password.onkeyup = validatePassword;
     </script>
 
 EOT;
 
 html_footer();
-?>
+
