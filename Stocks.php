@@ -173,7 +173,7 @@ echo <<<EOT
                         </thead>
                         <tbody>
 EOT;
-$sql = "SELECT * FROM `stocks` LEFT JOIN `products` ON `stocks`.`pro_id` = `products`.`pro_id`";
+$sql = "SELECT * FROM `stocks` LEFT JOIN `products` ON `stocks`.`pro_id` = `products`.`pro_id`;";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     // output data of each row

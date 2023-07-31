@@ -7,7 +7,7 @@ require_once "layout/footer.php";
 html_header("Stocks_Report");
 
 
-echo<<<EOT
+echo <<<EOT
 <main id="main" class="main">
     <div class="pagetitle">
         <h1>Manage Stocks Report</h1>
@@ -85,29 +85,32 @@ if (!empty($_GET['from']) && !empty($_GET['to'])) {
    LEFT JOIN products ON stocks.pro_id = products.pro_id
    WHERE DATE(stocks.add_date) < '" . $_GET['to'] . "' GROUP BY stocks.s_id;";
 } else {
-    $sql = "SELECT * , (SUM(quantity)-SUM(qty)) AS 'avlqty' FROM `sales` LEFT JOIN `stocks` ON `sales`.`stock_id` = `stocks`.`s_id` LEFT JOIN `products` ON `stocks`.`pro_id` = `products`.`pro_id` GROUP BY stocks.s_id;";
+    $sql = "SELECT *
+    FROM stocks
+    INNER JOIN products ON stocks.pro_id = products.pro_id
+    INNER JOIN sales ON stocks.s_id=sales.stock_id;";
 }
 
 // $sql = "SELECT * ,  (SUM(quantity)-SUM(qty)) AS 'avlqty' FROM `sales` LEFT JOIN `stocks` ON sales.stock_id = stocks.s_id LEFT JOIN `products` ON `stocks`.`pro_id` = `products`.`pro_id` GROUP BY stocks.s_id;";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
-// output data of each row
-while($row = $result->fetch_assoc()) {
+    // output data of each row
+    while ($row = $result->fetch_assoc()) {
 
-	echo "<tr><td>".$row["s_id"]."</td>
-	<td>".$row["pro_name"]."</td>
-    <td>".$row["batch_no"]."</td>
-    <td>".$row["quantity"]."</td>
-    <td>".$row["avlqty"]."</td></tr>";
-}
+        echo "<tr><td>" . $row["s_id"] . "</td>
+	<td>" . $row["pro_name"] . "</td>
+    <td>" . $row["batch_no"] . "</td>
+    <td>" . $row["quantity"] . "</td>
+    <td>" . $row["quantity"] - $row["qty"] . "</td></tr>";
+    }
 
-echo"</tbody></table></div></div></div></div>";
+    echo "</tbody></table></div></div></div></div>";
 } else {
-	echo "
+    echo "
     <tr>
       <td colspan='5'>No data to show <br/> Search again</td>
-    </tr>";    
-echo "</tbody></table></div></div></div></div>";
+    </tr>";
+    echo "</tbody></table></div></div></div></div>";
 }
 
 echo "</main>";

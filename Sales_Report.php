@@ -106,7 +106,7 @@ if ($result->num_rows > 0) {
     <td>" . $row["sale_price"] . "</td>
     <td>" . $row["sale_price"] - $row["buy_price"] . "</td></tr>";
 
-        $total .= $total + ($row["sale_price"] - $row["buy_price"]);
+        $total = $total + ($row["sale_price"] - $row["buy_price"]);
     }
 
     $value =  strval($total);
