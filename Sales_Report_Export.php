@@ -143,9 +143,9 @@ if ($result->num_rows > 0) {
     <td>" . $row["avlqty"] . "</td>
     <td>" . $row["buy_price"] . "</td>
     <td>" . $row["sale_price"] . "</td>
-    <td>" . $row["sale_price"] - $row["buy_price"] . "</td></tr>";
+    <td>" . ($row["sale_price"] - $row["buy_price"]) * $row["quantity"] . "</td></tr>";
 
-    $total = $total + ($row["sale_price"] - $row["buy_price"]);
+    $total = $total + ($row["sale_price"] - $row["buy_price"]) * $row["quantity"];
   }
 
   $value =  strval($total);

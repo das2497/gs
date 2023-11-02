@@ -191,7 +191,7 @@ echo <<<EOT
             labels: ['Cement', 'Metal', 'Bricks'],
             datasets: [{
                 data: [30, 40, 30], // Specify your data values here
-                backgroundColor: ['#ff5d52', '#52ff74', '#52aeff'], 
+                backgroundColor: ['#b56f4c', '#459443', '#537fa6'], 
             }]
         };
 

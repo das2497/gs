@@ -7,7 +7,7 @@ require_once "layout/footer.php";
 html_header("Sales_Report");
 
 
-echo<<<EOT
+echo <<<EOT
 <main id='main' class='main'>
     <div class='pagetitle'>
         <h1>Manage Sales Report</h1>
@@ -104,9 +104,9 @@ if ($result->num_rows > 0) {
     <td>" . $row["avlqty"] . "</td>
     <td>" . $row["buy_price"] . "</td>
     <td>" . $row["sale_price"] . "</td>
-    <td>" . $row["sale_price"] - $row["buy_price"] . "</td></tr>";
+    <td>" . ($row["sale_price"] - $row["buy_price"]) * $row["quantity"] . "</td></tr>";
 
-        $total = $total + ($row["sale_price"] - $row["buy_price"]);
+        $total = $total + ($row["sale_price"] - $row["buy_price"]) * $row["quantity"];
     }
 
     $value =  strval($total);
