@@ -16,10 +16,74 @@ $result = $conn->query($sql);
 $row = $result->fetch_assoc();
 $categories_c = $row["COUNT('cat_id')"];
 
-$sql = "SELECT COUNT('sales_id') FROM `sales` WHERE YEAR(`date`) = " . date("Y") . " AND MONTH(`date`) =" . date("m") . ";";
+$sql = "SELECT COUNT('sales_id') FROM `sales`;";
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();
 $sales = $row["COUNT('sales_id')"];
+
+//====================================Average Monthly Sales Of This Month====================================================================================
+
+$currentMonth = date('n');
+
+$sql = "SELECT COUNT('sales_id') FROM `sales` WHERE MONTH(`date`) =" . $currentMonth . ";";
+$result = $conn->query($sql);
+$row = $result->fetch_assoc();
+$this_month_sales = $row["COUNT('sales_id')"];
+
+$this_month_sales_percentage = ($this_month_sales / $sales) * 100;
+
+//====================================Average Monthly Profit Of This Month====================================================================================
+
+// $currentMonth = date('n');
+$sql = "SELECT * FROM sales
+INNER JOIN stocks ON sales.stock_id=stocks.s_id WHERE MONTH(`date`) = '" . $currentMonth . "';";
+$sql2 = "SELECT * FROM sales
+INNER JOIN stocks ON sales.stock_id=stocks.s_id;";
+
+$result = $conn->query($sql);
+$result2 = $conn->query($sql2);
+
+$full_profit = 0;
+while ($row2 = $result2->fetch_assoc()) {
+	$full_profit += ($row2['sale_price'] - $row2['buy_price']) * $row2['qty'];
+}
+
+$this_month_profit = 0;
+while ($row = $result->fetch_assoc()) {
+	$this_month_profit += ($row['sale_price'] - $row['buy_price']) * $row['qty'];
+}
+
+$this_month_profit_percentage = ($this_month_profit / $full_profit) * 100;
+
+//=================================Monthly cost==========================================================================================
+
+$sql = "SELECT * FROM stocks;";
+$result = $conn->query($sql);
+$full_cost = 0;
+while ($row = $result->fetch_assoc()) {
+	$full_cost = $row["buy_price"] * $row["quantity"];
+}
+
+$sql2 = "SELECT * FROM stocks WHERE MONTH(`add_date`) = '" . $currentMonth . "';";
+$result2 = $conn->query($sql2);
+$this_month_cost = 0;
+while ($row2 = $result2->fetch_assoc()) {
+	$this_month_cost = $row2["buy_price"] * $row2["quantity"];
+}
+
+//=====================================Best selling product============================================================================
+
+$sql = "SELECT *,SUM(sales.qty) AS `total_sales` FROM products
+INNER JOIN stocks ON products.pro_id=stocks.pro_id
+INNER JOIN sales ON stocks.s_id=sales.stock_id
+GROUP BY sales.stock_id
+ORDER BY total_sales DESC
+LIMIT 1;";
+$result = $conn->query($sql);
+$row = $result->fetch_assoc();
+$best_selling_product = $row['pro_name'];
+
+
 
 echo <<<EOT
 
@@ -91,8 +155,18 @@ echo <<<EOT
 		<div class="card mt-0">
 			<div class="row">
 				<div class="col-md-12 border-left text-center pt-2">
-				<span class="text-muted">Average Monthly Sales</span>
-					<h3 class="mb-0 fw-bold">150</h3>
+				<span class="text-muted">Average Monthly Sales Percentage Of This Month</span>
+					<h3 class="mb-0 fw-bold">$this_month_sales_percentage%</h3>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-3">
+		<div class="card mt-0">
+			<div class="row">
+				<div class="col-md-12 border-left text-center pt-2">
+				<span class="text-muted">Total Profit All the time</span>
+					<h3 class="mb-0 fw-bold">Rs. $full_profit</h3>
 				</div>
 			</div>
 		</div>
@@ -100,16 +174,19 @@ echo <<<EOT
 	<div class="col-md-3">
 		<div class="card mt-0 ">
 			<div class="row">
-				<div class="col-md-6">
-					<div class="peity_bar_bad left text-center mt-2">
-						<canvas width="50" height="24"></canvas>
-						</span>
-						<h6>+40%</h6>
-					</div>
+				<div class="col-md-12 border-left text-center pt-2">
+				<span class="text-muted">This Month Average Profit Percentage</span>
+					<h3 class="mb-0 fw-bold">$this_month_profit_percentage%</h3>
 				</div>
-				<div class="col-md-6 border-left text-center pt-2">
-				<span class="text-muted">Average Monthly Profit</span>
-					<h3 class="mb-0 fw-bold">Rs. 4560</h3>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-3">
+		<div class="card mt-0 ">
+			<div class="row">
+				<div class="col-md-12 border-left text-center pt-2">
+				<span class="text-muted">This Month Profit</span>
+					<h3 class="mb-0 fw-bold">$this_month_profit</h3>
 				</div>
 			</div>
 		</div>
@@ -117,16 +194,9 @@ echo <<<EOT
 	<div class="col-md-3">
 		<div class="card mt-0">
 			<div class="row">
-				<div class="col-md-6">
-					<div class="peity_line_good left text-center mt-2">
-						<canvas width="50" height="24"></canvas>
-						</span>
-						<h6>+60%</h6>
-					</div>
-				</div>
-				<div class="col-md-6 border-left text-center pt-2">
-				<span class="text-muted">Total Profit</span>
-					<h3 class="mb-0 fw-bold">Rs. 5672</h3>
+				<div class="col-md-12 border-left text-center pt-2">
+				<span class="text-muted">This Month Average Cost</span>
+					<h3 class="mb-0 fw-bold">Rs. $this_month_cost</h3>
 				</div>
 			</div>
 		</div>
@@ -134,76 +204,27 @@ echo <<<EOT
 	<div class="col-md-3">
 		<div class="card mt-0">
 			<div class="row">
-				<div class="col-md-6">
-					<div class="peity_bar_good left text-center mt-2">
-					<canvas width="50" height="24"></canvas>
-						<h6>+30%</h6>
-					</div>
-				</div>
-				<div class="col-md-6 border-left text-center pt-2">
-				<span class="text-muted">Average Monthly Cost</span>
-					<h3 class="mb-0 fw-bold">Rs. 2560</h3>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="col-md-3">
-		<div class="card mt-0">
-			<div class="row">
-				<div class="col-md-6">
-					<div class="peity_bar_good left text-center mt-2">
-					<canvas width="50" height="24"></canvas>
-						<h6>+30%</h6>
-					</div>
-				</div>
-				<div class="col-md-6 border-left text-center pt-2">
+				<div class="col-md-12 border-left text-center pt-2">
 				<span class="text-muted">Total Cost</span>
-					<h3 class="mb-0 fw-bold">Rs. 2560</h3>
+					<h3 class="mb-0 fw-bold">Rs. $full_cost</h3>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="col-md-6 offset-md-0">
-		<h1 class="text-center">Products Selling Chart</h1>
-		<canvas id="myPieChart"></canvas>		
-	</div>
+
 	<div class="col-md-3 offset-md-0">
 		<div class="card mt-0">
 			<div class="row">
-				<div class="col-md-6">
-					<div class="peity_bar_good left text-center mt-2">
-					<canvas width="50" height="24"></canvas>
-						<h6></h6>
-					</div>
-				</div>
-				<div class="col-md-6 border-left text-center pt-2">
+				<div class="col-md-12 border-left text-center pt-2">
 				<span class="text-muted">Best Selling Product</span>
-					<h3 class="mb-0 fw-bold">Cement</h3>
+					<h3 class="mb-0 fw-bold">$best_selling_product</h3>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
 
-    <script>
-        // Data for the pie chart
-        var data = {
-            labels: ['Cement', 'Metal', 'Bricks'],
-            datasets: [{
-                data: [30, 40, 30], // Specify your data values here
-                backgroundColor: ['#b56f4c', '#459443', '#537fa6'], 
-            }]
-        };
-
-        // Get the canvas element
-        var ctx = document.getElementById('myPieChart').getContext('2d');
-
-        // Create the pie chart
-        var myPieChart = new Chart(ctx, {
-            type: 'pie',
-            data: data,
-        });
-    </script>
+ 
 
 </section>
 
