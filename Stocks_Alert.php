@@ -40,7 +40,7 @@ echo<<<EOT
                         </thead>
                         <tbody>
 EOT;
-$sql = "SELECT * , (SUM(quantity) - SUM(qty)) AS 'avlqty' FROM `sales` 
+$sql = "SELECT * , ((quantity) - SUM(qty)) AS 'avlqty' FROM `sales` 
 LEFT JOIN `stocks` ON sales.stock_id = stocks.s_id 
 LEFT JOIN `products` ON `stocks`.`pro_id` = `products`.`pro_id` 
 GROUP BY stocks.s_id;";

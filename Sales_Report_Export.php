@@ -126,7 +126,7 @@ if (!empty($_GET['from']) && !empty($_GET['to'])) {
    LEFT JOIN products ON stocks.pro_id = products.pro_id
    WHERE sales.date < '" . $_GET['to'] . "' GROUP BY stocks.s_id;";
 } else {
-  $sql = "SELECT * , (SUM(quantity)-SUM(qty)) AS 'avlqty' FROM `sales` LEFT JOIN `stocks` ON `sales`.`stock_id` = `stocks`.`s_id` LEFT JOIN `products` ON `stocks`.`pro_id` = `products`.`pro_id` GROUP BY stocks.s_id;";
+  $sql = "SELECT * , ((quantity)-SUM(qty)) AS 'avlqty' FROM `sales` LEFT JOIN `stocks` ON `sales`.`stock_id` = `stocks`.`s_id` LEFT JOIN `products` ON `stocks`.`pro_id` = `products`.`pro_id` GROUP BY stocks.s_id;";
 }
 
 $result = $conn->query($sql);
