@@ -61,14 +61,14 @@ $sql = "SELECT * FROM stocks;";
 $result = $conn->query($sql);
 $full_cost = 0;
 while ($row = $result->fetch_assoc()) {
-	$full_cost = $row["buy_price"] * $row["quantity"];
+	$full_cost += $row["buy_price"] * $row["quantity"];
 }
 
 $sql2 = "SELECT * FROM stocks WHERE MONTH(`add_date`) = '" . $currentMonth . "';";
 $result2 = $conn->query($sql2);
 $this_month_cost = 0;
 while ($row2 = $result2->fetch_assoc()) {
-	$this_month_cost = $row2["buy_price"] * $row2["quantity"];
+	$this_month_cost += $row2["buy_price"] * $row2["quantity"];
 }
 
 //=====================================Best selling product============================================================================
