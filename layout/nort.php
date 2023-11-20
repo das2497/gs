@@ -34,7 +34,7 @@ if ($result->num_rows > 0) {
           if ($value[0] === '0') {
             $hiddenValue = substr($value, 1); // Remove the first digit
           } else {
-            $hiddenValue = $value; // Keep the original value
+            $hiddenValue = $value; // Keep the original value 
           }
 
           echo $hiddenValue;
