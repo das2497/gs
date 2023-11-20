@@ -29,6 +29,7 @@ if ($result->num_rows > 0) {
         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light rounded-circle" style="font-size: 10px;">
           <?php
 
+          $hiddenValue;
           $value =  strval($alart_count);
 
           if ($value[0] === '0') {
