@@ -55,10 +55,11 @@ echo <<<EOT
                                 <th scope='col'>Stock ID</th>
                                 <th scope='col'>Product Name</th>
                                 <th scope='col'>Batch No</th>
-                                <th scope='col'>Date</th>
-                                <th scope='col'>Sold Quantity</th>
-                                <th scope='col'>Cost of Sales</th>
-                                <th scope='col'>Revenue</th>
+                                <th scope='col'>Quantity</th>
+                                <th scope='col'>Avl Quantity</th>
+                                <th scope='col'>Buy Price</th>
+                                <th scope='col'>Sale Price</th>
+                                <th scope='col'>Profit</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -66,42 +67,40 @@ EOT;
 
 $sql = "";
 if (!empty($_GET['from']) && !empty($_GET['to'])) {
-    $sql = "SELECT *
-    FROM `sales`
-    INNER JOIN `stocks` ON `sales`.`stock_id` = `stocks`.`s_id`
-    INNER JOIN `products` ON `stocks`.`pro_id` = `products`.`pro_id`   
-  WHERE sales.date BETWEEN '" . $_GET['from'] . "' AND '" . $_GET['to'] . "' GROUP BY sales.sales_id;";
+    $sql = "SELECT *, (SUM(stocks.quantity) - SUM(sales.qty)) AS 'avlqty'
+  FROM sales
+  LEFT JOIN stocks ON sales.stock_id = stocks.s_id
+  LEFT JOIN products ON stocks.pro_id = products.pro_id
+  WHERE sales.date BETWEEN '" . $_GET['from'] . "' AND '" . $_GET['to'] . "' GROUP BY stocks.s_id;";
 } elseif (!empty($_GET['from'])) {
-    $sql = "SELECT *
-    FROM `sales`
-    INNER JOIN `stocks` ON `sales`.`stock_id` = `stocks`.`s_id`
-    INNER JOIN `products` ON `stocks`.`pro_id` = `products`.`pro_id`
-   WHERE sales.date > '" . $_GET['from'] . "' GROUP BY sales.sales_id;";
+    $sql = "SELECT *, (SUM(stocks.quantity) - SUM(sales.qty)) AS 'avlqty'
+   FROM sales
+   LEFT JOIN stocks ON sales.stock_id = stocks.s_id
+   LEFT JOIN products ON stocks.pro_id = products.pro_id
+   WHERE sales.date > '" . $_GET['from'] . "' GROUP BY stocks.s_id;";
 } elseif (!empty($_GET['to'])) {
-    $sql = "SELECT *
-    FROM `sales`
-    INNER JOIN `stocks` ON `sales`.`stock_id` = `stocks`.`s_id`
-    INNER JOIN `products` ON `stocks`.`pro_id` = `products`.`pro_id`
-   WHERE sales.date < '" . $_GET['to'] . "' GROUP BY sales.sales_id;";
+    $sql = "SELECT *, (SUM(stocks.quantity) - SUM(sales.qty)) AS 'avlqty'
+   FROM sales
+   LEFT JOIN stocks ON sales.stock_id = stocks.s_id
+   LEFT JOIN products ON stocks.pro_id = products.pro_id
+   WHERE sales.date < '" . $_GET['to'] . "' GROUP BY stocks.s_id;";
 } else {
-    // $sql = "SELECT * , ((quantity)-SUM(qty)) AS 'avlqty' FROM `sales` 
-    // LEFT JOIN `stocks` ON `sales`.`stock_id` = `stocks`.`s_id` 
-    // LEFT JOIN `products` ON `stocks`.`pro_id` = `products`.`pro_id` 
-    // GROUP BY stocks.s_id;";
+    $sql = "SELECT * , ((quantity)-SUM(qty)) AS 'avlqty' FROM `sales` 
+    LEFT JOIN `stocks` ON `sales`.`stock_id` = `stocks`.`s_id` 
+    LEFT JOIN `products` ON `stocks`.`pro_id` = `products`.`pro_id` 
+    GROUP BY stocks.s_id;";
 
-    $sql = "SELECT *
-    FROM `sales`
-    INNER JOIN `stocks` ON `sales`.`stock_id` = `stocks`.`s_id`
-    INNER JOIN `products` ON `stocks`.`pro_id` = `products`.`pro_id`
-    GROUP BY sales.sales_id;";
+    // $sql = "SELECT *,SUM(sales.qty) AS 'sales_quantity'
+    // FROM `sales`
+    // LEFT JOIN `stocks` ON `sales`.`stock_id` = `stocks`.`s_id`
+    // LEFT JOIN `products` ON `stocks`.`pro_id` = `products`.`pro_id`
+    // GROUP BY sales.stock_id;";
 }
 
 
 //$sql = "SELECT * , (SUM(quantity)-SUM(qty)) AS 'avlqty' FROM `sales` LEFT JOIN `stocks` ON sales.stock_id = stocks.s_id LEFT JOIN `products` ON `stocks`.`pro_id` = `products`.`pro_id` GROUP BY stocks.pro_id;";
 $result = $conn->query($sql);
 $total = 0;
-$revenue = 0;
-$total_cost_of_salese = 0;
 
 if ($result->num_rows > 0) {
     // output data of each row
@@ -110,16 +109,13 @@ if ($result->num_rows > 0) {
         echo "<tr><td>" . $row["s_id"] . "</td>
 	<td>" . $row["pro_name"] . "</td>
     <td>" . $row["batch_no"] . "</td>
-    <td>" . $row['date'] . "</td>
-    <td>" . $row["quantity"] -  $row["qty"] . "</td>
-    <td>" . $row["buy_price"] * ($row['quantity'] - $row['qty']) . "</td>
-    <td>" . $row["sale_price"]  * ($row["quantity"] - $row["qty"]) . "</td></tr>";
+    <td>" . $row["quantity"] . "</td>
+    <td>" . $row["avlqty"] . "</td>
+    <td>" . $row["buy_price"] . "</td>
+    <td>" . $row["sale_price"] . "</td>
+    <td>" . ($row["sale_price"] - $row["buy_price"]) * ($row["quantity"] - $row["avlqty"]) . "</td></tr>";
 
-        // <td>" . ($row["sale_price"] - $row["buy_price"]) * ($row["quantity"] - $row["qty"]) . "</td></tr>";
-
-        $revenue = $revenue + $row["sale_price"]  * ($row["quantity"] - $row["qty"]);
-        $total_cost_of_salese = $total_cost_of_salese + $row["buy_price"] * ($row['quantity'] - $row['qty']);
-        $total = $total + ($row["sale_price"] - $row["buy_price"]) * ($row["quantity"] - $row["qty"]);
+        $total = $total + ($row["sale_price"] - $row["buy_price"]) * ($row["quantity"] - $row["avlqty"]);
     }
 
     $value =  strval($total);
@@ -131,21 +127,12 @@ if ($result->num_rows > 0) {
     }
 
     echo "
-    <tr class='table-info'>
-    <td class='text-end' colspan='5' scope='col'></td>
-    <th scope='col'>Total Revenue</th>
-    <td scope='col'>" . $revenue . "</td>
-    </tr>
-    <tr class='table-info'>
-    <td class='text-end' colspan='5' scope='col'></td>
-    <th scope='col'>Total Cost Of Sales</th>
-    <td scope='col'>" . $total_cost_of_salese . "</td>
-    </tr>
 <tr class='table-info'>
-<td class='text-end' colspan='5' scope='col'></td>
-<th scope='col'>Gross profit</th>
+<td class='text-end' colspan='6' scope='col'></td>
+<th scope='col'>Total Profit</th>
 <td scope='col'>" . $hiddenValue . "</td>
-</tr>";
+</tr>
+";
 
     echo "</tbody></table></div></div></div></div>";
 } else {

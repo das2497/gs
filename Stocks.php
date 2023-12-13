@@ -102,7 +102,7 @@ echo <<<EOT
                 <div class="col-lg-8">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Manage Stocks $pro_name $batch_no</h5>
+                            <h5 class="card-title">Add Stocks $pro_name $batch_no</h5>
                             <form method="POST">
                                 <div class="row mb-3">
                                     <label class="col-md-4 col-lg-3 col-form-label">Product Name: </label>

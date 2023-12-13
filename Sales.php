@@ -9,63 +9,60 @@ html_header("Sales");
 
 $sql = "SELECT * FROM `stocks` LEFT JOIN products ON stocks.pro_id =products.pro_id";
 $result = $conn->query($sql);
-$stock_options="";
+$stock_options = "";
 if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        $value="<option value='".$row["s_id"]."'> #".$row["s_id"] . " - " . $row["pro_id"]. " - " . $row["pro_name"]. " - B" . $row["batch_no"]."</option>";
-        $stock_options=$stock_options . $value;
+    while ($row = $result->fetch_assoc()) {
+        $value = "<option value='" . $row["s_id"] . "'> #" . $row["s_id"] . " - " . $row["pro_id"] . " - " . $row["pro_name"] . " - B" . $row["batch_no"] . "</option>";
+        $stock_options = $stock_options . $value;
     }
 }
 
+$todayDate = date("Y-m-d");
 
+if (isset($_POST['insert'])) {
 
-if (isset($_POST['insert'])) { 
-
-    $sql = "INSERT INTO `sales` (`stock_id`, `qty`, `price`, `date`) VALUES
-        ('{$_POST['stock_id']}', '{$_POST['qty']}', '{$_POST['price']}', '{$_POST['date']}');";
-        $conn->query($sql);
-        echo"<script>window.location.href = 'Sales.php';</script>";
-    }
-
-if (isset($_POST['update'])) { 
-    
-    $sql = "UPDATE `sales` SET stock_id='{$_POST['stock_id']}' , qty='{$_POST['qty']}' , price='{$_POST['price']}' , date='{$_POST['date']}'  WHERE `sales_id` = ". $_POST['sales_id'].";";
+    $sql = "INSERT INTO `sales` (`stock_id`, `qty`, `date`) VALUES
+        ('{$_POST['stock_id']}', '{$_POST['qty']}', '" . $todayDate . "');";
     $conn->query($sql);
-   echo"<script>window.location.href = 'Sales.php';</script>";
+    echo "<script>window.location.href = 'Sales.php';</script>";
 }
 
-if (isset($_GET['delete'])) { 
+if (isset($_POST['update'])) {
+
+    $sql = "UPDATE `sales` SET  qty='{$_POST['qty']}' , date='" . $todayDate . "'  WHERE `sales_id` = " . $_POST['sales_id'] . ";";
+    echo $sql;
+    $conn->query($sql);
+    echo "<script>window.location.href = 'Sales.php';</script>";
+}
+
+if (isset($_GET['delete'])) {
     $sql = "DELETE FROM sales WHERE `sales`.`sales_id` = '{$_GET['delete']}'";
     $conn->query($sql);
-    echo"<script>window.location.href = 'Sales.php';</script>";
+    echo "<script>window.location.href = 'Sales.php';</script>";
 }
 
-if (isset($_GET['update'])){
-    $sql = "SELECT * FROM `sales` WHERE sales_id='".$_GET['update']."'";
+if (isset($_GET['update'])) {
+    $sql = "SELECT * FROM `sales` WHERE sales_id='" . $_GET['update'] . "'";
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
 
-    $sales_id =$_GET['update'];
+    $sales_id = $_GET['update'];
     $stock_id = $row["stock_id"];
-    $price=$row["qty"];
-    $qty =$row["price"];
-    $date =$row["date"];
+    $price = $row["qty"];
 
-    $btn_update="";
-    $btn_insert="display: none;";
-}else{
+    $btn_update = "";
+    $btn_insert = "display: none;";
+} else {
 
     $sales_id = "";
     $stock_id = "";
-    $price = "";
     $qty = "";
-    $date = "";
 
-    $btn_update="display: none;";
-    $btn_insert="";
+    $btn_update = "display: none;";
+    $btn_insert = "";
 }
 
-echo<<<EOT
+echo <<<EOT
 <main id="main" class="main">
     <div class="pagetitle">
         <h1>Manage Sales</h1>
@@ -101,18 +98,6 @@ echo<<<EOT
                                         <input type="text" class="form-control "name="qty" value="$qty" required>
                                     </div>
                                 </div>
-                                <div class="row mb-3">
-                                    <label class="col-md-4 col-lg-3 col-form-label">Sell Price :</label>
-                                    <div class="col-md-8 col-lg-9">
-                                        <input type="text" class="form-control "name="price" value="$price" required>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <label class="col-md-4 col-lg-3 col-form-label">Date:</label>
-                                    <div class="col-md-8 col-lg-9">
-                                        <input type="date" class="form-control "name="date" value="$date" required>
-                                    </div>
-                                </div>
 
                                 <div class="col-sm-10">
                                     <button type="submit"  style="$btn_insert" class="btn btn-primary" name="insert">Insert</button>
@@ -141,7 +126,6 @@ echo<<<EOT
                                 <th scope="col">Product Name</th>
                                 <th scope="col">Batch No</th>
                                 <th scope="col">Quantity</th>
-                                <th scope="col">Sale Price</th>
                                 <th scope="col">Date</th>
                                 <th scope="col">Action</th>
                             </tr>
@@ -153,37 +137,34 @@ $sql = "SELECT * FROM `sales` LEFT JOIN `stocks` ON `sales`.`stock_id` = `stocks
 
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
-// output data of each row
-$pval='';
-while($row = $result->fetch_assoc()) {
+    // output data of each row
+    $pval = '';
+    while ($row = $result->fetch_assoc()) {
 
-$newval = $row["pro_name"];
-if ($pval==$newval){
-  $name_val = "";
+        $newval = $row["pro_name"];
+        if ($pval == $newval) {
+            $name_val = "";
+        } else {
+            $name_val = $row["pro_name"];
+            $pval = $newval;
+            # code...
+        }
 
-}else {
-  $name_val = $row["pro_name"];
-  $pval = $newval ;
-  # code...
-}
-
-	echo "<tr><td>".$row["sales_id"]."</td>
-	<td>".$row["stock_id"]."</td>
-    <td>".$name_val."</td>
-    <td>".$row["batch_no"]."</td>
-    <td>".$row["qty"]."</td>
-    <td>".$row["price"]."</td>
-    <td>".$row["date"]."</td>
+        echo "<tr><td>" . $row["sales_id"] . "</td>
+	<td>" . $row["stock_id"] . "</td>
+    <td>" . $name_val . "</td>
+    <td>" . $row["batch_no"] . "</td>
+    <td>" . $row["qty"] . "</td>
+    <td>" . $row["date"] . "</td>
     <td> <a href='?delete={$row["sales_id"]}' title='Click To Delete'><i class='bi bi-trash-fill'></i></a> | 
-    <a href='?update={$row["sales_id"]}' title='Click To Delete'><i class='bi bi-pencil-fill'></i> </a>"."</td></tr>";
-}
+    <a href='?update={$row["sales_id"]}' title='Click To Delete'><i class='bi bi-pencil-fill'></i> </a>" . "</td></tr>";
+    }
 
-echo"</tbody></table></div></div></div></div>";
+    echo "</tbody></table></div></div></div></div>";
 } else {
-echo "</tbody></table></div></div></div></div>";
+    echo "</tbody></table></div></div></div></div>";
 }
 
 echo "</main>";
 
 html_footer();
-?>

@@ -23,7 +23,7 @@ echo<<<EOT
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title" style="text-align: center;">Stocks Alert View</h5>
+                <h5 class="card-title" style="text-align: center;">Balance Stock</h5>
                 <br>
                 <div style="overflow-x:auto;">
                     <table class="table table-striped" style="text-align:center; white-space:nowrap;font-size: 15px; "
