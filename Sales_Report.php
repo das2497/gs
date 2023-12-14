@@ -111,15 +111,15 @@ if ($result->num_rows > 0) {
 	<td>" . $row["pro_name"] . "</td>
     <td>" . $row["batch_no"] . "</td>
     <td>" . $row['date'] . "</td>
-    <td>" . $row["quantity"] -  $row["qty"] . "</td>
-    <td>" . $row["buy_price"] * ($row['quantity'] - $row['qty']) . "</td>
-    <td>" . $row["sale_price"]  * ($row["quantity"] - $row["qty"]) . "</td></tr>";
+    <td>" . $row["qty"] . "</td>
+    <td>" . $row["buy_price"] *  $row['qty'] . "</td>
+    <td>" . $row["sale_price"]  *  $row["qty"] . "</td></tr>";
 
         // <td>" . ($row["sale_price"] - $row["buy_price"]) * ($row["quantity"] - $row["qty"]) . "</td></tr>";
 
-        $revenue = $revenue + $row["sale_price"]  * ($row["quantity"] - $row["qty"]);
-        $total_cost_of_salese = $total_cost_of_salese + $row["buy_price"] * ($row['quantity'] - $row['qty']);
-        $total = $total + ($row["sale_price"] - $row["buy_price"]) * ($row["quantity"] - $row["qty"]);
+        $revenue = $revenue + $row["sale_price"]  * $row["qty"];
+        $total_cost_of_salese = $total_cost_of_salese + $row["buy_price"] * $row['qty'];
+        $total = $total + ($row["sale_price"] - $row["buy_price"]) * $row["qty"];
     }
 
     $value =  strval($total);
