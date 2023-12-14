@@ -222,7 +222,7 @@ function html_header($active)
       <li class="nav-item">
         <a class="nav-link $Sales" href="Sales.php">
           <i class="bi bi-cash-coin"></i>
-          <span>Sales</span>
+          <span>Add Sales</span>
         </a>
       </li>
       <li class="nav-item">
@@ -235,7 +235,7 @@ function html_header($active)
       <li class="nav-item">
         <a class="nav-link $Stocks" href="Stocks.php">
           <i class="bi bi-bricks"></i>
-          <span>Stocks</span>
+          <span>Add Stocks</span>
         </a>
       </li>
 

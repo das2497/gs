@@ -12,9 +12,10 @@ if ($result->num_rows > 0) {
   while ($row = $result->fetch_assoc()) {
     if (!($row["s_alert"] > $row["avlqty"])) {
       continue;
+    } else {
+      $alartt .= '<li><hr class="dropdown-divider"></li><li class="notification-item"><i class="bi bi-exclamation-circle text-warning"></i><div><h4> ' . $row["pro_name"] . '  - ' . $row["batch_no"] . ' -  Available : (' . $row["avlqty"] . ')  </h4><p> ' . $row["s_alert"] . '</p></div></li>';
+      $alart_count = $alart_count + 1;
     }
-    $alartt .= '<li><hr class="dropdown-divider"></li><li class="notification-item"><i class="bi bi-exclamation-circle text-warning"></i><div><h4> ' . $row["pro_name"] . '  - ' . $row["batch_no"] . ' -  Available : (' . $row["avlqty"] . ')  </h4><p> ' . $row["s_alert"] . '</p></div></li>';
-    $alart_count .= $alart_count + 1;
   }
 }
 

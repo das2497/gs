@@ -30,7 +30,7 @@ $result = $conn->query($sql);
 $row = $result->fetch_assoc();
 $this_month_sales = $row["COUNT('sales_id')"];
 
-$this_month_sales_percentage = ($this_month_sales / $sales) * 100;
+$this_month_sales_percentage = number_format(($this_month_sales / $sales) * 100, 2);
 
 //====================================Average Monthly Profit Of This Month====================================================================================
 
@@ -53,7 +53,7 @@ while ($row = $result->fetch_assoc()) {
 	$this_month_profit += ($row['sale_price'] - $row['buy_price']) * $row['qty'];
 }
 
-$this_month_profit_percentage = ($this_month_profit / $full_profit) * 100;
+$this_month_profit_percentage = number_format(($this_month_profit / $full_profit) * 100, 2);
 
 //=================================Monthly cost==========================================================================================
 
