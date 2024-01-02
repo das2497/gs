@@ -47,13 +47,13 @@ GROUP BY stocks.s_id;";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
 while($row = $result->fetch_assoc()) {
-    ($row["s_alert"] > $row["avlqty"])? ($alert_styl =" color: white;background-color: red;") : ($alert_styl = "");
+    ($row["st_alert"] > $row["avlqty"])? ($alert_styl =" color: white;background-color: red;") : ($alert_styl = "");
 	echo "<tr><td style='$alert_styl'>".$row["s_id"]."</td>
 	<td style='$alert_styl'>".$row["pro_name"]."</td>
     <td style='$alert_styl'>".$row["batch_no"]."</td>
     <td style='$alert_styl'>".$row["quantity"]."</td>
     <td style='$alert_styl'>".$row["avlqty"]."</td>
-    <td style='$alert_styl'>".$row["s_alert"]."</td></tr>";
+    <td style='$alert_styl'>".$row["st_alert"]."</td></tr>";
 }
     echo"</tbody></table></div></div></div></div>";
 } else {

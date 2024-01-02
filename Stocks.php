@@ -36,15 +36,15 @@ if (isset($_POST['insert'])) {
 
     // $batch_no = ($row["max(batch_no)"] + 1);
 
-    $sql = "INSERT INTO `stocks` (`pro_id`, `batch_no`, `quantity`, `buy_price`, `sale_price`, `s_alert`) VALUES
-        ('{$_POST['pro_id']}', '$b_no', '{$_POST['quantity']}', '{$_POST['buy_price']}', '{$_POST['sale_price']}', '{$_POST['s_alert']}');";
+    $sql = "INSERT INTO `stocks` (`pro_id`, `batch_no`, `quantity`, `buy_price`, `sale_price`) VALUES
+        ('{$_POST['pro_id']}', '$b_no', '{$_POST['quantity']}', '{$_POST['buy_price']}', '{$_POST['sale_price']}');";
     $conn->query($sql);
     echo "<script>window.location.href = 'Stocks.php';</script>";
 }
 
 if (isset($_POST['update'])) {
 
-    $sql = "UPDATE `stocks` SET pro_id='{$_POST['pro_id']}' , quantity='{$_POST['quantity']}' , buy_price='{$_POST['buy_price']}' , sale_price='{$_POST['sale_price']}'  , s_alert='{$_POST['s_alert']}'  WHERE `s_id` = " . $_POST['stock_id'] . ";";
+    $sql = "UPDATE `stocks` SET pro_id='{$_POST['pro_id']}' , quantity='{$_POST['quantity']}' , buy_price='{$_POST['buy_price']}' , sale_price='{$_POST['sale_price']}'  WHERE `s_id` = " . $_POST['stock_id'] . ";";
     $conn->query($sql);
     echo "<script>window.location.href = 'Stocks.php';</script>";
 }
@@ -66,7 +66,6 @@ if (isset($_GET['update'])) {
     $quantity = $row["quantity"];
     $buy_price = $row["buy_price"];
     $sale_price = $row["sale_price"];
-    $s_alert = $row["s_alert"];
 
     $btn_update = "";
     $btn_insert = "display: none;";
@@ -78,7 +77,6 @@ if (isset($_GET['update'])) {
     $quantity = "";
     $buy_price = "";
     $sale_price = "";
-    $s_alert = "";
 
     $btn_update = "display: none;";
     $btn_insert = "";
@@ -133,12 +131,6 @@ echo <<<EOT
                                         <input type="text" class="form-control "name="sale_price" value="$sale_price" required>
                                     </div>
                                 </div>
-                                <div class="row mb-3">
-                                    <label class="col-md-4 col-lg-3 col-form-label">Stock Alert :</label>
-                                    <div class="col-md-8 col-lg-9">
-                                        <input type="text" class="form-control "name="s_alert" value="$s_alert" required>
-                                    </div>
-                                </div>
                                 <div class="col-sm-10">
                                     <button type="submit"  style="$btn_insert" class="btn btn-primary" name="insert">Insert</button>
                                     <button type="submit"  style="$btn_update" class="btn btn-primary" name="update">Update</button>
@@ -167,7 +159,6 @@ echo <<<EOT
                                 <th scope="col">Quantity</th>
                                 <th scope="col">Buy Price</th>
                                 <th scope="col">Sale Price</th>
-                                <th scope="col">Stock Alert</th>
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
@@ -195,7 +186,6 @@ if ($result->num_rows > 0) {
     <td>" . $row["quantity"] . "</td>
     <td>" . $row["buy_price"] . "</td>
     <td>" . $row["sale_price"] . "</td>
-    <td>" . $row["s_alert"] . "</td>
     <td> <a href='?delete={$row["s_id"]}' title='Click To Delete'><i class='bi bi-trash-fill'></i></a> | 
     <a href='?update={$row["s_id"]}' title='Click To Delete'><i class='bi bi-pencil-fill'></i> </a>" . "</td></tr>";
     }

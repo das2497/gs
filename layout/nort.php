@@ -2,15 +2,15 @@
 
 require_once "../config/database.php";
 $sql = "SELECT * , (SUM(quantity)-SUM(qty)) AS 'avlqty' FROM `sales` 
-LEFT JOIN `stocks` ON sales.stock_id = stocks.s_id 
-LEFT JOIN `products` ON `stocks`.`pro_id` = `products`.`pro_id` 
-GROUP BY stocks.s_id;";
+INNER JOIN `stocks` ON sales.stock_id = stocks.s_id 
+INNER JOIN `products` ON `stocks`.`pro_id` = `products`.`pro_id` 
+GROUP BY products.pro_id;";
 $result = $conn->query($sql);
 $alartt = "";
 $alart_count = 0;
 if ($result->num_rows > 0) {
   while ($row = $result->fetch_assoc()) {
-    if (!($row["s_alert"] > $row["avlqty"])) {
+    if (!($row["st_alert"] > $row["avlqty"])) {
       continue;
     } else {
       $alartt .= '<li><hr class="dropdown-divider"></li><li class="notification-item"><i class="bi bi-exclamation-circle text-warning"></i><div><h4> ' . $row["pro_name"] . '  - ' . $row["batch_no"] . ' -  Available : (' . $row["avlqty"] . ')  </h4><p> ' . $row["s_alert"] . '</p></div></li>';
