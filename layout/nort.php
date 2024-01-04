@@ -1,19 +1,17 @@
 <?php
 
 require_once "../config/database.php";
-$sql = "SELECT * , (SUM(quantity)-SUM(qty)) AS 'avlqty' FROM `sales` 
-INNER JOIN `stocks` ON sales.stock_id = stocks.s_id 
-INNER JOIN `products` ON `stocks`.`pro_id` = `products`.`pro_id` 
-GROUP BY products.pro_id;";
+$sql = "SELECT * FROM stocks 
+INNER JOIN products ON stocks.pro_id=products.pro_id;";
 $result = $conn->query($sql);
 $alartt = "";
 $alart_count = 0;
 if ($result->num_rows > 0) {
   while ($row = $result->fetch_assoc()) {
-    if (!($row["st_alert"] > $row["avlqty"])) {
+    if (!($row["st_alert"] > $row["quantity"])) {
       continue;
     } else {
-      $alartt .= '<li><hr class="dropdown-divider"></li><li class="notification-item"><i class="bi bi-exclamation-circle text-warning"></i><div><h4> ' . $row["pro_name"] . '  - ' . $row["batch_no"] . ' -  Available : (' . $row["avlqty"] . ')  </h4><p> ' . $row["s_alert"] . '</p></div></li>';
+      $alartt .= '<li><hr class="dropdown-divider"></li><li class="notification-item"><i class="bi bi-exclamation-circle text-warning"></i><div><h4> ' . $row["pro_name"] . '  - ' . $row["batch_no"] . ' -  Available : (' . $row["quantity"] . ')  </h4><p> ' . $row["st_alert"] . '</p></div></li>';
       $alart_count = $alart_count + 1;
     }
   }
