@@ -21,17 +21,17 @@ $todayDate = date("Y-m-d");
 
 if (isset($_POST['insert'])) {
 
-    $rs = $conn->query("SELECT * FROM stocks
+    $rs = $conn->query("SELECT * , ((quantity) - SUM(qty)) AS 'avlqty' FROM `sales` 
+    LEFT JOIN `stocks` ON sales.stock_id = stocks.s_id
+    LEFT JOIN products ON stocks.pro_id=products.pro_id 
     WHERE s_id='" . $_POST['stock_id'] . "';");
     $d = $rs->fetch_assoc();
 
-    if ($d['quantity'] >= $_POST['qty']) {
+    if ($d['avlqty'] >= $_POST['qty']) {
         $sql = "INSERT INTO `sales` (`stock_id`, `qty`, `date`) VALUES
         ('{$_POST['stock_id']}', '{$_POST['qty']}', '" . $todayDate . "');";
         $conn->query($sql);
-        $sql2 = "UPDATE stocks SET quantity='" . $d['quantity'] - $_POST['qty'] . "' WHERE s_id='" . $_POST['stock_id'] . "';";
-        $conn->query($sql2);
-        echo "<script>alert('success'); \n window.location.href = 'Sales.php';</script>";
+        echo "<script>window.location.href = 'Sales.php';</script>";
     } else {
         echo "<script>alert('Not enough stock.');</script>";
     }
